@@ -110,7 +110,14 @@ public class StackAnalysis {
       break;
 		}
 		case RCALL: {
-		  break;
+      RelativeAddress branch = (RelativeAddress) instruction;
+      //
+      if (branch.k != -1) {
+        // Explore the branch target
+        traverse(pc + branch.k, currentHeight+2);
+      }
+      traverse(pc, currentHeight);
+      break;
 		}
 		case JMP: {
 			AbsoluteAddress branch = (AbsoluteAddress) instruction;
