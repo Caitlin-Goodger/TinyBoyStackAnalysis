@@ -112,8 +112,8 @@ public class StackAnalysis {
 		}
 		case JMP: {
 			AbsoluteAddress branch = (AbsoluteAddress) instruction;
-			//
-			throw new RuntimeException("implement me!");
+      traverse(pc + branch.k, currentHeight);
+      break;
 		}
 		case RJMP: {
 			// NOTE: this one is implemented for you.
