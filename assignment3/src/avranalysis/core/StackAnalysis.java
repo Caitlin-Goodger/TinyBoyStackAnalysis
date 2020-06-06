@@ -94,8 +94,12 @@ public class StackAnalysis {
 		case BRGE:
 		case BRLT: {
 			RelativeAddress branch = (RelativeAddress) instruction;
-			//
-			throw new RuntimeException("implement me!");
+	      if (branch.k != -1) {
+	        // Explore the branch target
+	        traverse(pc+branch.k, currentHeight);
+	        traverse(pc, currentHeight);
+	      }
+	      break;
 		}
 		case SBRS: {
 			throw new RuntimeException("implement me!");
