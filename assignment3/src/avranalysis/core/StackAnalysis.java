@@ -102,13 +102,15 @@ public class StackAnalysis {
 		}
 		case CALL: {
 			AbsoluteAddress branch = (AbsoluteAddress) instruction;
-			//
-			throw new RuntimeException("implement me!");
+			if (branch.k != -1) {
+        // Explore the branch target
+        traverse(branch.k, currentHeight+2);
+      }
+      traverse(pc, currentHeight);
+      break;
 		}
 		case RCALL: {
-			RelativeAddress branch = (RelativeAddress) instruction;
-			//
-			throw new RuntimeException("implement me!");
+		  break;
 		}
 		case JMP: {
 			AbsoluteAddress branch = (AbsoluteAddress) instruction;
@@ -127,6 +129,7 @@ public class StackAnalysis {
 			break;
 		}
 		case RET:
+		  break;
 		case RETI:
 			throw new RuntimeException("implement me!");
 		case PUSH:
