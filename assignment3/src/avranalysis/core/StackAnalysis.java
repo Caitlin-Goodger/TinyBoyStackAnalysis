@@ -130,7 +130,8 @@ public class StackAnalysis {
 		case RETI:
 			throw new RuntimeException("implement me!");
 		case PUSH:
-			throw new RuntimeException("implement me!");
+		  traverse(pc, currentHeight+1);
+		  break;
 		case POP:
 			throw new RuntimeException("implement me!");
 		default:
