@@ -152,7 +152,7 @@ public class StackAnalysis {
 		case RET:
 		  break;
 		case RETI:
-			throw new RuntimeException("implement me!");
+			break;
 		case PUSH:
 		  traverse(pc, currentHeight+1);
 		  break;
