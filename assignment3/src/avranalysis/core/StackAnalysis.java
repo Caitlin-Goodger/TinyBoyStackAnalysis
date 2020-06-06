@@ -102,7 +102,10 @@ public class StackAnalysis {
 	      break;
 		}
 		case SBRS: {
-			throw new RuntimeException("implement me!");
+		  traverse(pc, currentHeight);
+		  traverse(pc+1, currentHeight);
+		  traverse(pc+2, currentHeight);
+		  break;
 		}
 		case CALL: {
 			AbsoluteAddress branch = (AbsoluteAddress) instruction;
