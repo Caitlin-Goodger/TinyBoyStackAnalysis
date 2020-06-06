@@ -121,7 +121,10 @@ public class StackAnalysis {
 		}
 		case JMP: {
 			AbsoluteAddress branch = (AbsoluteAddress) instruction;
-      traverse(branch.k, currentHeight);
+			if (branch.k != -1) {
+        // Explore the branch target
+        traverse(branch.k, currentHeight);
+      }
       break;
 		}
 		case RJMP: {
