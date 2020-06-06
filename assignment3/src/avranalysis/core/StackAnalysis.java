@@ -10,6 +10,11 @@ import javr.core.AvrInstruction.RelativeAddress;
 import javr.io.HexFile;
 import javr.memory.ElasticByteMemory;
 
+/**
+ * Stack Analysis class
+ * @author Caitlin
+ *
+ */
 public class StackAnalysis {
 	/**
 	 * Contains the raw bytes of the given firmware image being analysed.
@@ -27,21 +32,21 @@ public class StackAnalysis {
 	private int maxHeight;
 
 	/**
-	 *
-	 * @param firmware
+	 * Constructor for Stack Analysis class
+	 * @param hf = hexFile to read
 	 */
 	public StackAnalysis(HexFile hf) {
 		// Create firmware memory
 		this.firmware = new ElasticByteMemory();
 		// Upload image to firmware memory
-		hf.uploadTo(firmware);
+		hf.uploadTo(this.firmware);
 	}
 
 	/**
 	 * Apply the stack analysis to the given firmware image producing a maximum
 	 * stack usage (in bytes).
 	 *
-	 * @return
+	 * @return maxHeight = height of stack.
 	 */
 	public int apply() {
 		// Reset the maximum, height
@@ -49,7 +54,7 @@ public class StackAnalysis {
 		// Traverse instructions starting at beginning
 		traverse(0, 0);
 		// Return the maximum height observed
-		return maxHeight;
+		return this.maxHeight;
 	}
 
 	/**
@@ -60,13 +65,12 @@ public class StackAnalysis {
 	 *            Program Counter of instruction to traverse
 	 * @param currentHeight
 	 *            Current height of the stack at this point (in bytes)
-	 * @return
 	 */
 	private void traverse(int pc, int currentHeight) {
 		// Check whether current stack height is maximum
-		maxHeight = Math.max(maxHeight, currentHeight);
+		this.maxHeight = Math.max(this.maxHeight, currentHeight);
 		// Check whether we have terminated or not
-		if ((pc * 2) >= firmware.size()) {
+		if ((pc * 2) >= this.firmware.size()) {
 			// We've gone over end of instruction sequence, so stop.
 			return;
 		}
@@ -166,9 +170,9 @@ public class StackAnalysis {
 	 * Decode the instruction at a given PC location.
 	 *
 	 * @param pc
-	 * @return
+	 * @return AvrInstruction = set of inctructions
 	 */
 	private AvrInstruction decodeInstructionAt(int pc) {
-		return decoder.decode(firmware, pc);
+		return this.decoder.decode(this.firmware, pc);
 	}
 }
