@@ -133,7 +133,8 @@ public class StackAnalysis {
 		  traverse(pc, currentHeight+1);
 		  break;
 		case POP:
-			throw new RuntimeException("implement me!");
+		  traverse(pc, currentHeight-1);
+      break;
 		default:
 			// Indicates a standard instruction where control is transferred to the
 			// following instruction.
