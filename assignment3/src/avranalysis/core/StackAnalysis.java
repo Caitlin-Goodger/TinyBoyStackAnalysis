@@ -1,7 +1,8 @@
 package avranalysis.core;
 
 import java.util.Arrays;
-
+import java.util.HashMap;
+import java.util.Map.Entry;
 import javr.core.AvrDecoder;
 import javr.core.AvrInstruction;
 import javr.core.AvrInstruction.AbsoluteAddress;
@@ -31,6 +32,12 @@ public class StackAnalysis {
    * Records the maximum height seen so far.
    */
   private int maxHeight;
+  
+  /**
+   * Map to store the previous instructions and the previous height that it was at. 
+   */
+  private HashMap<AvrInstruction, Integer> previousInstructions = 
+      new HashMap<AvrInstruction, Integer>();
 
   /**
    * Constructor for Stack Analysis class.
@@ -57,6 +64,7 @@ public class StackAnalysis {
     traverse(0, 0);
     // Return the maximum height observed
     return this.maxHeight;
+    
   }
 
   /**
@@ -90,22 +98,25 @@ public class StackAnalysis {
    * @param currentHeight Current height of the stack at this point (in bytes)
    */
   private void process(AvrInstruction instruction, int pc, int currentHeight) {
+    System.out.println(instruction + "    " + currentHeight);
     switch (instruction.getOpcode()) {
-      case BREQ:
-      case BRGE:
+      case BREQ: 
+      case BRGE: 
       case BRLT: {
         RelativeAddress branch = (RelativeAddress) instruction;
-        if (branch.k != -1) {
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight)) {
+          previousInstructions.put(instruction, currentHeight);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
           traverse(pc, currentHeight);
         }
+        
         break;
       }
       case SBRS: {
         traverse(pc, currentHeight);
         traverse(pc + 1, currentHeight);
-        traverse(pc + 2, currentHeight);
+        //traverse(pc + 2, currentHeight);
         break;
       }
       case CALL: {
@@ -120,11 +131,13 @@ public class StackAnalysis {
       case RCALL: {
         RelativeAddress branch = (RelativeAddress) instruction;
         //
-        if (branch.k != -1) {
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight)) {
+          previousInstructions.put(instruction, currentHeight);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight + 2);
+          traverse(pc, currentHeight);
         }
-        traverse(pc, currentHeight);
+        
         break;
       }
       case JMP: {
@@ -139,7 +152,8 @@ public class StackAnalysis {
         // NOTE: this one is implemented for you.
         RelativeAddress branch = (RelativeAddress) instruction;
         // Check whether infinite loop; if so, terminate.
-        if (branch.k != -1) {
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight)) {
+          previousInstructions.put(instruction, currentHeight);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
         }
@@ -159,9 +173,42 @@ public class StackAnalysis {
       default:
         // Indicates a standard instruction where control is transferred to the
         // following instruction.
+        
         traverse(pc, currentHeight);
     }
+    
+    
   }
+
+  /**
+   * Check if we have already visited this instruction.
+   * @param instruction           Current Instruction
+   * @param currentHeight Current height of the stack at this point (in bytes)
+   * @return
+   */
+  public boolean previouslyVisited(AvrInstruction instruction, int currentHeight) {
+    if (this.maxHeight == Integer.MAX_VALUE) {
+      System.out.println(instruction + " screamming " + currentHeight);
+      return true;
+    }
+    for (Entry<AvrInstruction, Integer> entry : this.previousInstructions.entrySet()) {
+      if (entry.getKey().toString().equals(instruction.toString()) 
+          && entry.getValue() == currentHeight) {
+        return true;
+      }
+    }
+    for (Entry<AvrInstruction, Integer> entry : this.previousInstructions.entrySet()) {
+      if (entry.getKey().toString().equals(instruction.toString())
+          && entry.getValue() != currentHeight) {
+        System.out.println(instruction + " helping " + currentHeight);
+        this.maxHeight = Integer.MAX_VALUE;
+      }
+    }
+    return false;
+  }
+  
+
+  
 
   /**
    * Decode the instruction at a given PC location.
