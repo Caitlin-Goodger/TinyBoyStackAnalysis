@@ -39,6 +39,8 @@ public class StackAnalysis {
    */
   private HashMap<AvrInstruction, ArrayList<Integer>> previousInstructions = 
       new HashMap<AvrInstruction, ArrayList<Integer>>();
+  
+  private boolean fromCalled = false;
 
   /**
    * Constructor for Stack Analysis class.
@@ -125,10 +127,16 @@ public class StackAnalysis {
       }
       case CALL: {
         AbsoluteAddress branch = (AbsoluteAddress) instruction;
-        if (branch.k != -1) {
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
           // Explore the branch target
+          ArrayList<Integer> values = new ArrayList<>();
+          values.add(currentHeight);
+          values.add(pc);
+          previousInstructions.put(instruction, values);
+          fromCalled = true;
           traverse(branch.k, currentHeight + 2);
         }
+        fromCalled = false;
         traverse(pc, currentHeight);
         break;
       }
@@ -184,7 +192,6 @@ public class StackAnalysis {
       default:
         // Indicates a standard instruction where control is transferred to the
         // following instruction.
-        
         traverse(pc, currentHeight);
     }
     
@@ -199,7 +206,7 @@ public class StackAnalysis {
    */
   public boolean previouslyVisited(AvrInstruction instruction, int currentHeight, int pc) {
     if (this.maxHeight == Integer.MAX_VALUE) {
-      System.out.println(instruction + " screamming " + currentHeight + "screaming" + pc);
+      //System.out.println(instruction + " screaming " + currentHeight + " screaming " + pc);
       return true;
     }
     
@@ -207,14 +214,17 @@ public class StackAnalysis {
       ArrayList<Integer> values = entry.getValue();
       if (entry.getKey().toString().equals(instruction.toString()) 
           && values.get(0) == currentHeight && pc == values.get(1)) {
-        System.out.println(instruction + " crying " + currentHeight + " crying " + pc);
+        //System.out.println(instruction + " crying " + currentHeight + " crying " + pc);
         return true;
       }
       if (entry.getKey().toString().equals(instruction.toString())
           && values.get(0) != currentHeight && pc == values.get(1)) {
         System.out.println(instruction + " helping " + currentHeight + " helping " + pc);
-        maxHeight = Integer.MAX_VALUE;
+        if (!fromCalled) {
+          maxHeight = Integer.MAX_VALUE;
+        }
       }
+      
     }
     return false;
   }
@@ -226,7 +236,7 @@ public class StackAnalysis {
    * Decode the instruction at a given PC location.
    *
    * @param pc = program counter. 
-   * @return AvrInstruction = set of inctructions
+   * @return AvrInstruction = set of instructions
    */
   private AvrInstruction decodeInstructionAt(int pc) {
     return this.decoder.decode(this.firmware, pc);
