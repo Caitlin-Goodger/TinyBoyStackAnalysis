@@ -1,5 +1,6 @@
 package avranalysis.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -36,8 +37,8 @@ public class StackAnalysis {
   /**
    * Map to store the previous instructions and the previous height that it was at. 
    */
-  private HashMap<AvrInstruction, Integer> previousInstructions = 
-      new HashMap<AvrInstruction, Integer>();
+  private HashMap<AvrInstruction, ArrayList<Integer>> previousInstructions = 
+      new HashMap<AvrInstruction, ArrayList<Integer>>();
 
   /**
    * Constructor for Stack Analysis class.
@@ -98,14 +99,17 @@ public class StackAnalysis {
    * @param currentHeight Current height of the stack at this point (in bytes)
    */
   private void process(AvrInstruction instruction, int pc, int currentHeight) {
-    System.out.println(instruction + "    " + currentHeight);
+    System.out.println(instruction + "    " + currentHeight + "    " + pc);
     switch (instruction.getOpcode()) {
       case BREQ: 
       case BRGE: 
       case BRLT: {
         RelativeAddress branch = (RelativeAddress) instruction;
-        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight)) {
-          previousInstructions.put(instruction, currentHeight);
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
+          ArrayList<Integer> values = new ArrayList<>();
+          values.add(currentHeight);
+          values.add(pc);
+          previousInstructions.put(instruction, values);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
           traverse(pc, currentHeight);
@@ -131,12 +135,16 @@ public class StackAnalysis {
       case RCALL: {
         RelativeAddress branch = (RelativeAddress) instruction;
         //
-        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight)) {
-          previousInstructions.put(instruction, currentHeight);
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
+          ArrayList<Integer> values = new ArrayList<>();
+          values.add(currentHeight);
+          values.add(pc);
+          previousInstructions.put(instruction, values);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight + 2);
-          traverse(pc, currentHeight);
+          
         }
+        traverse(pc, currentHeight);
         
         break;
       }
@@ -152,8 +160,11 @@ public class StackAnalysis {
         // NOTE: this one is implemented for you.
         RelativeAddress branch = (RelativeAddress) instruction;
         // Check whether infinite loop; if so, terminate.
-        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight)) {
-          previousInstructions.put(instruction, currentHeight);
+        if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
+          ArrayList<Integer> values = new ArrayList<>();
+          values.add(currentHeight);
+          values.add(pc);
+          previousInstructions.put(instruction, values);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
         }
@@ -186,22 +197,23 @@ public class StackAnalysis {
    * @param currentHeight Current height of the stack at this point (in bytes)
    * @return
    */
-  public boolean previouslyVisited(AvrInstruction instruction, int currentHeight) {
+  public boolean previouslyVisited(AvrInstruction instruction, int currentHeight, int pc) {
     if (this.maxHeight == Integer.MAX_VALUE) {
-      System.out.println(instruction + " screamming " + currentHeight);
+      System.out.println(instruction + " screamming " + currentHeight + "screaming" + pc);
       return true;
     }
-    for (Entry<AvrInstruction, Integer> entry : this.previousInstructions.entrySet()) {
+    
+    for (Entry<AvrInstruction, ArrayList<Integer>> entry : this.previousInstructions.entrySet()) {
+      ArrayList<Integer> values = entry.getValue();
       if (entry.getKey().toString().equals(instruction.toString()) 
-          && entry.getValue() == currentHeight) {
+          && values.get(0) == currentHeight && pc == values.get(1)) {
+        System.out.println(instruction + " crying " + currentHeight + " crying " + pc);
         return true;
       }
-    }
-    for (Entry<AvrInstruction, Integer> entry : this.previousInstructions.entrySet()) {
       if (entry.getKey().toString().equals(instruction.toString())
-          && entry.getValue() != currentHeight) {
-        System.out.println(instruction + " helping " + currentHeight);
-        this.maxHeight = Integer.MAX_VALUE;
+          && values.get(0) != currentHeight && pc == values.get(1)) {
+        System.out.println(instruction + " helping " + currentHeight + " helping " + pc);
+        maxHeight = Integer.MAX_VALUE;
       }
     }
     return false;
