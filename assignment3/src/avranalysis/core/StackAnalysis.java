@@ -108,7 +108,7 @@ public class StackAnalysis {
       case BRLT: {
         RelativeAddress branch = (RelativeAddress) instruction;
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList<>();
+          ArrayList<Integer> values = new ArrayList();
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
@@ -129,7 +129,7 @@ public class StackAnalysis {
         AbsoluteAddress branch = (AbsoluteAddress) instruction;
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
           // Explore the branch target
-          ArrayList<Integer> values = new ArrayList<>();
+          ArrayList<Integer> values = new ArrayList();
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
@@ -144,7 +144,7 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         //
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList<>();
+          ArrayList<Integer> values = new ArrayList();
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
@@ -169,7 +169,7 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         // Check whether infinite loop; if so, terminate.
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList<>();
+          ArrayList<Integer> values = new ArrayList();
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
