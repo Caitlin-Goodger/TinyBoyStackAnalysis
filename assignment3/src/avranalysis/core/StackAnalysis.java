@@ -220,7 +220,8 @@ public class StackAnalysis {
    * Check if we have already visited this instruction.
    * @param instruction           Current Instruction
    * @param currentHeight Current height of the stack at this point (in bytes)
-   * @return
+   * @param pc = Current program counter. 
+   * @return = true for seen before, false for not. 
    */
   public boolean previouslyVisited(AvrInstruction instruction, int currentHeight, int pc) {
     if (this.maxHeight == Integer.MAX_VALUE) {
@@ -237,7 +238,7 @@ public class StackAnalysis {
       }
     }
 
-    for (int i = 2; i < previousIn.size(); i++) {
+    for (int i = 0; i < previousIn.size(); i++) {
       AvrInstruction previous = previousIn.get(i);
       int previouspc = previousPC.get(i);
       if (previous.toString().equals(instruction.toString()) && pc == previouspc) {
