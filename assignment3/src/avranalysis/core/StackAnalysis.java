@@ -120,7 +120,6 @@ public class StackAnalysis {
           previousIn.add(instruction);
           previousStackHeight.add(currentHeight);
           previousPC.add(pc);
-          previousK.add(branch.k);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
           traverse(pc, currentHeight);
@@ -145,7 +144,6 @@ public class StackAnalysis {
           previousIn.add(instruction);
           previousStackHeight.add(currentHeight);
           previousPC.add(pc);
-          previousK.add(branch.k);
           fromCalled = true;
           traverse(branch.k, currentHeight + 2);
         }
@@ -164,7 +162,6 @@ public class StackAnalysis {
           previousIn.add(instruction);
           previousStackHeight.add(currentHeight);
           previousPC.add(pc);
-          previousK.add(branch.k);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight + 2);
           
@@ -193,7 +190,6 @@ public class StackAnalysis {
           previousIn.add(instruction);
           previousStackHeight.add(currentHeight);
           previousPC.add(pc);
-          previousK.add(branch.k);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
         }
