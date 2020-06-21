@@ -223,33 +223,33 @@ public class StackAnalysis {
    * @return
    */
   public boolean previouslyVisited(AvrInstruction instruction, int currentHeight, int pc) {
-    if(this.maxHeight == Integer.MAX_VALUE) {
+    if (this.maxHeight == Integer.MAX_VALUE) {
       return true;
     }
-    for(int i = 0; i <previousIn.size();i++) {
+    for (int i = 0; i < previousIn.size(); i++) {
       AvrInstruction previous = previousIn.get(i);
       int previouspc = previousPC.get(i);
-      if(previous.toString().equals(instruction.toString()) && pc == previouspc) {
+      if (previous.toString().equals(instruction.toString()) && pc == previouspc) {
         int previousHeight = previousStackHeight.get(i);
-        if(previousHeight == currentHeight) {
+        if (previousHeight == currentHeight) {
           return true;
         }
       }
     }
-    
-    for(int i = 2; i <previousIn.size();i++) {
+
+    for (int i = 2; i < previousIn.size(); i++) {
       AvrInstruction previous = previousIn.get(i);
       int previouspc = previousPC.get(i);
-      if(previous.toString().equals(instruction.toString()) && pc == previouspc) {
+      if (previous.toString().equals(instruction.toString()) && pc == previouspc) {
         int previousHeight = previousStackHeight.get(i);
-        if(previousHeight<currentHeight) {
-          if(!fromCalled) {
+        if (previousHeight < currentHeight) {
+          if (!fromCalled) {
             maxHeight = Integer.MAX_VALUE;
           }
         }
-        
-        if(previousHeight>=currentHeight) {
-            return true;
+
+        if (previousHeight >= currentHeight) {
+          return true;
         }
         
         
