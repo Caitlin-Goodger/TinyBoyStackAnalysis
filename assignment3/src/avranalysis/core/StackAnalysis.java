@@ -31,11 +31,7 @@ public class StackAnalysis {
    */
   private int maxHeight;
   
-  /**
-   * Map to store the previous instructions and the previous height that it was at. 
-   */
-  private HashMap<AvrInstruction, ArrayList<Integer>> previousInstructions = 
-      new HashMap<AvrInstruction, ArrayList<Integer>>();
+
   
   private ArrayList<AvrInstruction> previousIn = new ArrayList<AvrInstruction>();
   private ArrayList<Integer> previousStackHeight = new ArrayList<Integer>();
@@ -110,10 +106,6 @@ public class StackAnalysis {
       case BRLT: {
         RelativeAddress branch = (RelativeAddress) instruction;
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList<Integer>();
-          values.add(Integer.valueOf(currentHeight));
-          values.add(Integer.valueOf(pc));
-          this.previousInstructions.put(instruction, values);
           this.previousIn.add(instruction);
           this.previousStackHeight.add(Integer.valueOf(currentHeight));
           this.previousPC.add(Integer.valueOf(pc));
@@ -134,10 +126,6 @@ public class StackAnalysis {
         AbsoluteAddress branch = (AbsoluteAddress) instruction;
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
           // Explore the branch target
-          ArrayList<Integer> values = new ArrayList<Integer>();
-          values.add(Integer.valueOf(currentHeight));
-          values.add(Integer.valueOf(pc));
-          this.previousInstructions.put(instruction, values);
           this.previousIn.add(instruction);
           this.previousStackHeight.add(Integer.valueOf(currentHeight));
           this.previousPC.add(Integer.valueOf(pc));
@@ -152,10 +140,6 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         //
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList<Integer>();
-          values.add(Integer.valueOf(currentHeight));
-          values.add(Integer.valueOf(pc));
-          this.previousInstructions.put(instruction, values);
           this.previousIn.add(instruction);
           this.previousStackHeight.add(Integer.valueOf(currentHeight));
           this.previousPC.add(Integer.valueOf(pc));
@@ -180,10 +164,6 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         // Check whether infinite loop; if so, terminate.
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList<Integer>();
-          values.add(Integer.valueOf(currentHeight));
-          values.add(Integer.valueOf(pc));
-          this.previousInstructions.put(instruction, values);
           this.previousIn.add(instruction);
           this.previousStackHeight.add(Integer.valueOf(currentHeight));
           this.previousPC.add(Integer.valueOf(pc));
