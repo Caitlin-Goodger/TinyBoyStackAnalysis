@@ -1,13 +1,10 @@
 package avranalysis.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import javr.core.AvrDecoder;
 import javr.core.AvrInstruction;
 import javr.core.AvrInstruction.AbsoluteAddress;
-import javr.core.AvrInstruction.FlagRelativeAddress;
 import javr.core.AvrInstruction.RelativeAddress;
 import javr.io.HexFile;
 import javr.memory.ElasticByteMemory;
@@ -40,9 +37,9 @@ public class StackAnalysis {
   private HashMap<AvrInstruction, ArrayList<Integer>> previousInstructions = 
       new HashMap<AvrInstruction, ArrayList<Integer>>();
   
-  private ArrayList<AvrInstruction> previousIn = new ArrayList();
-  private ArrayList<Integer> previousStackHeight = new ArrayList();
-  private ArrayList<Integer> previousPC = new ArrayList();
+  private ArrayList<AvrInstruction> previousIn = new ArrayList<AvrInstruction>();
+  private ArrayList<Integer> previousStackHeight = new ArrayList<Integer>();
+  private ArrayList<Integer> previousPC = new ArrayList<Integer>();
   
   private boolean fromCalled = false;
   
@@ -113,13 +110,13 @@ public class StackAnalysis {
       case BRLT: {
         RelativeAddress branch = (RelativeAddress) instruction;
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList();
-          values.add(currentHeight);
-          values.add(pc);
-          previousInstructions.put(instruction, values);
-          previousIn.add(instruction);
-          previousStackHeight.add(currentHeight);
-          previousPC.add(pc);
+          ArrayList<Integer> values = new ArrayList<Integer>();
+          values.add(Integer.valueOf(currentHeight));
+          values.add(Integer.valueOf(pc));
+          this.previousInstructions.put(instruction, values);
+          this.previousIn.add(instruction);
+          this.previousStackHeight.add(Integer.valueOf(currentHeight));
+          this.previousPC.add(Integer.valueOf(pc));
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
           traverse(pc, currentHeight);
@@ -137,17 +134,17 @@ public class StackAnalysis {
         AbsoluteAddress branch = (AbsoluteAddress) instruction;
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
           // Explore the branch target
-          ArrayList<Integer> values = new ArrayList();
-          values.add(currentHeight);
-          values.add(pc);
-          previousInstructions.put(instruction, values);
-          previousIn.add(instruction);
-          previousStackHeight.add(currentHeight);
-          previousPC.add(pc);
-          fromCalled = true;
+          ArrayList<Integer> values = new ArrayList<Integer>();
+          values.add(Integer.valueOf(currentHeight));
+          values.add(Integer.valueOf(pc));
+          this.previousInstructions.put(instruction, values);
+          this.previousIn.add(instruction);
+          this.previousStackHeight.add(Integer.valueOf(currentHeight));
+          this.previousPC.add(Integer.valueOf(pc));
+          this.fromCalled = true;
           traverse(branch.k, currentHeight + 2);
         }
-        fromCalled = false;
+        this.fromCalled = false;
         traverse(pc, currentHeight);
         break;
       }
@@ -155,13 +152,13 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         //
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList();
-          values.add(currentHeight);
-          values.add(pc);
-          previousInstructions.put(instruction, values);
-          previousIn.add(instruction);
-          previousStackHeight.add(currentHeight);
-          previousPC.add(pc);
+          ArrayList<Integer> values = new ArrayList<Integer>();
+          values.add(Integer.valueOf(currentHeight));
+          values.add(Integer.valueOf(pc));
+          this.previousInstructions.put(instruction, values);
+          this.previousIn.add(instruction);
+          this.previousStackHeight.add(Integer.valueOf(currentHeight));
+          this.previousPC.add(Integer.valueOf(pc));
           // Explore the branch target
           traverse(pc + branch.k, currentHeight + 2);
           
@@ -183,13 +180,13 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         // Check whether infinite loop; if so, terminate.
         if (branch.k != -1 && !previouslyVisited(instruction, currentHeight, pc)) {
-          ArrayList<Integer> values = new ArrayList();
-          values.add(currentHeight);
-          values.add(pc);
-          previousInstructions.put(instruction, values);
-          previousIn.add(instruction);
-          previousStackHeight.add(currentHeight);
-          previousPC.add(pc);
+          ArrayList<Integer> values = new ArrayList<Integer>();
+          values.add(Integer.valueOf(currentHeight));
+          values.add(Integer.valueOf(pc));
+          this.previousInstructions.put(instruction, values);
+          this.previousIn.add(instruction);
+          this.previousStackHeight.add(Integer.valueOf(currentHeight));
+          this.previousPC.add(Integer.valueOf(pc));
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
         }
@@ -227,25 +224,25 @@ public class StackAnalysis {
     if (this.maxHeight == Integer.MAX_VALUE) {
       return true;
     }
-    for (int i = 0; i < previousIn.size(); i++) {
-      AvrInstruction previous = previousIn.get(i);
-      int previouspc = previousPC.get(i);
+    for (int i = 0; i < this.previousIn.size(); i++) {
+      AvrInstruction previous = this.previousIn.get(i);
+      int previouspc = this.previousPC.get(i).intValue();
       if (previous.toString().equals(instruction.toString()) && pc == previouspc) {
-        int previousHeight = previousStackHeight.get(i);
+        int previousHeight = this.previousStackHeight.get(i).intValue();
         if (previousHeight == currentHeight) {
           return true;
         }
       }
     }
 
-    for (int i = 0; i < previousIn.size(); i++) {
-      AvrInstruction previous = previousIn.get(i);
-      int previouspc = previousPC.get(i);
+    for (int i = 0; i < this.previousIn.size(); i++) {
+      AvrInstruction previous = this.previousIn.get(i);
+      int previouspc = this.previousPC.get(i).intValue();
       if (previous.toString().equals(instruction.toString()) && pc == previouspc) {
-        int previousHeight = previousStackHeight.get(i);
+        int previousHeight = this.previousStackHeight.get(i).intValue();
         if (previousHeight < currentHeight) {
-          if (!fromCalled) {
-            maxHeight = Integer.MAX_VALUE;
+          if (!this.fromCalled) {
+            this.maxHeight = Integer.MAX_VALUE;
           }
         }
 
