@@ -40,7 +40,13 @@ public class StackAnalysis {
   private HashMap<AvrInstruction, ArrayList<Integer>> previousInstructions = 
       new HashMap<AvrInstruction, ArrayList<Integer>>();
   
+  private ArrayList<AvrInstruction> previousIn = new ArrayList();
+  private ArrayList<Integer> previousStackHeight = new ArrayList();
+  private ArrayList<Integer> previousPC = new ArrayList();
+  
   private boolean fromCalled = false;
+  
+ 
 
   /**
    * Constructor for Stack Analysis class.
@@ -111,6 +117,10 @@ public class StackAnalysis {
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
+          previousIn.add(instruction);
+          previousStackHeight.add(currentHeight);
+          previousPC.add(pc);
+          previousK.add(branch.k);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
           traverse(pc, currentHeight);
@@ -132,6 +142,10 @@ public class StackAnalysis {
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
+          previousIn.add(instruction);
+          previousStackHeight.add(currentHeight);
+          previousPC.add(pc);
+          previousK.add(branch.k);
           fromCalled = true;
           traverse(branch.k, currentHeight + 2);
         }
@@ -147,6 +161,10 @@ public class StackAnalysis {
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
+          previousIn.add(instruction);
+          previousStackHeight.add(currentHeight);
+          previousPC.add(pc);
+          previousK.add(branch.k);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight + 2);
           
@@ -172,6 +190,10 @@ public class StackAnalysis {
           values.add(currentHeight);
           values.add(pc);
           previousInstructions.put(instruction, values);
+          previousIn.add(instruction);
+          previousStackHeight.add(currentHeight);
+          previousPC.add(pc);
+          previousK.add(branch.k);
           // Explore the branch target
           traverse(pc + branch.k, currentHeight);
         }
@@ -191,6 +213,7 @@ public class StackAnalysis {
       default:
         // Indicates a standard instruction where control is transferred to the
         // following instruction.
+        System.out.println(instruction.getOpcode());
         traverse(pc, currentHeight);
     }
     
@@ -204,24 +227,39 @@ public class StackAnalysis {
    * @return
    */
   public boolean previouslyVisited(AvrInstruction instruction, int currentHeight, int pc) {
-    if (this.maxHeight == Integer.MAX_VALUE) {
+    if(this.maxHeight == Integer.MAX_VALUE) {
       return true;
     }
-    
-    for (Entry<AvrInstruction, ArrayList<Integer>> entry : this.previousInstructions.entrySet()) {
-      ArrayList<Integer> values = entry.getValue();
-      if (entry.getKey().toString().equals(instruction.toString()) 
-          && values.get(0) == currentHeight && pc == values.get(1)) {
-        return true;
-      }
-      if (entry.getKey().toString().equals(instruction.toString())
-          && values.get(0) != currentHeight && pc == values.get(1)) {
-        if (!fromCalled) {
-          maxHeight = Integer.MAX_VALUE;
+    for(int i = 0; i <previousIn.size();i++) {
+      AvrInstruction previous = previousIn.get(i);
+      int previouspc = previousPC.get(i);
+      if(previous.toString().equals(instruction.toString()) && pc == previouspc) {
+        int previousHeight = previousStackHeight.get(i);
+        if(previousHeight == currentHeight) {
+          return true;
         }
       }
-      
     }
+    
+    for(int i = 2; i <previousIn.size();i++) {
+      AvrInstruction previous = previousIn.get(i);
+      int previouspc = previousPC.get(i);
+      if(previous.toString().equals(instruction.toString()) && pc == previouspc) {
+        int previousHeight = previousStackHeight.get(i);
+        if(previousHeight<currentHeight) {
+          if(!fromCalled) {
+            maxHeight = Integer.MAX_VALUE;
+          }
+        }
+        
+        if(previousHeight>=currentHeight) {
+            return true;
+        }
+        
+        
+      }
+    }
+    
     return false;
   }
   
