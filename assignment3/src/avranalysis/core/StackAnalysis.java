@@ -1,7 +1,6 @@
 package avranalysis.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import javr.core.AvrDecoder;
 import javr.core.AvrInstruction;
 import javr.core.AvrInstruction.AbsoluteAddress;
@@ -31,10 +30,19 @@ public class StackAnalysis {
    */
   private int maxHeight;
   
-
-  
+  /**
+   * Records a list of all the previous instructions.
+   */
   private ArrayList<AvrInstruction> previousIn = new ArrayList<AvrInstruction>();
+  
+  /**
+   * Records a list of all the previous stack heights.
+   */
   private ArrayList<Integer> previousStackHeight = new ArrayList<Integer>();
+  
+  /** 
+   * Records a list of all the previous program counter values. 
+   */
   private ArrayList<Integer> previousPC = new ArrayList<Integer>();
   
   private boolean fromCalled = false;
