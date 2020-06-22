@@ -99,7 +99,8 @@ public class StackAnalysis {
   }
 
   /**
-   * Process the effect of a given instruction.
+   * Process the effect of a given instruction. Switch statement to traverse differently depending 
+   * on what the instruction is. 
    *
    * @param instruction   Instruction to process
    * @param pc            Program counter of following instruction
@@ -287,6 +288,8 @@ public class StackAnalysis {
 
   /**
    * Check if we have already visited this instruction.
+   * If the current height is the same, then it is a stable 
+   * If the current height is different, then it is unstable. 
    * @param instruction           Current Instruction
    * @param currentHeight Current height of the stack at this point (in bytes)
    * @param pc = Current program counter. 
