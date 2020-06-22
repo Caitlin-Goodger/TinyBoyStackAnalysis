@@ -218,9 +218,11 @@ public class StackAnalysis {
   }
 
   /**
-   * @param instruction
-   * @param pc
-   * @param currentHeight
+   * Add the current values to the respective lists to keep track of them
+   * when moving down a branch. 
+   * @param instruction   Instruction to process
+   * @param pc            Program counter of following instruction
+   * @param currentHeight Current height of the stack at this point (in bytes)
    */
   public void addCurrentValues(AvrInstruction instruction, int pc, int currentHeight) {
     this.previousIn.add(instruction);
