@@ -118,11 +118,9 @@ public class StackAnalysis {
           this.previousPC.add(Integer.valueOf(pc));
           int size = this.previousIn.size();
           traverse(pc + branch.k, currentHeight);
-          for (int i = this.previousIn.size() - 1; i > size; i--) {
-            this.previousIn.remove(i);
-            this.previousStackHeight.remove(i);
-            this.previousPC.remove(i);
-          }
+          //Once it had traversed down a branch, then remove the instructions
+          //that it had seen down that branch
+          removeInstructions(size);
           traverse(pc, currentHeight);
         }
         
@@ -132,15 +130,10 @@ public class StackAnalysis {
         this.previousIn.add(instruction);
         this.previousStackHeight.add(Integer.valueOf(currentHeight));
         this.previousPC.add(Integer.valueOf(pc));
-        // Explore the branch target
         int size = this.previousIn.size();
         traverse(pc, currentHeight);
         traverse(pc + 1, currentHeight);
-        for (int i = this.previousIn.size() - 1; i > size; i--) {
-          this.previousIn.remove(i);
-          this.previousStackHeight.remove(i);
-          this.previousPC.remove(i);
-        }
+        removeInstructions(size);
         
         break;
       }
@@ -152,11 +145,7 @@ public class StackAnalysis {
           this.previousPC.add(Integer.valueOf(pc));
           int size = this.previousIn.size();
           traverse(branch.k, currentHeight + 2);
-          for (int i = this.previousIn.size() - 1; i > size; i--) {
-            this.previousIn.remove(i);
-            this.previousStackHeight.remove(i);
-            this.previousPC.remove(i);
-          }
+          removeInstructions(size);
           
           
         }
@@ -165,11 +154,7 @@ public class StackAnalysis {
         this.previousPC.add(Integer.valueOf(pc));
         int size = this.previousIn.size();
         traverse(pc, currentHeight);
-        for (int i = this.previousIn.size() - 1; i > size; i--) {
-          this.previousIn.remove(i);
-          this.previousStackHeight.remove(i);
-          this.previousPC.remove(i);
-        }
+        removeInstructions(size);
         
         break;
       }
@@ -181,12 +166,7 @@ public class StackAnalysis {
           this.previousPC.add(Integer.valueOf(pc));
           int size = this.previousIn.size();
           traverse(pc + branch.k, currentHeight + 2);
-          for (int i = this.previousIn.size() - 1; i > size; i--) {
-            this.previousIn.remove(i);
-            this.previousStackHeight.remove(i);
-            this.previousPC.remove(i);
-          }
-          
+          removeInstructions(size);
         }
         
         this.previousIn.add(instruction);
@@ -194,11 +174,7 @@ public class StackAnalysis {
         this.previousPC.add(Integer.valueOf(pc));
         int size = this.previousIn.size();
         traverse(pc, currentHeight);
-        for (int i = this.previousIn.size() - 1; i > size; i--) {
-          this.previousIn.remove(i);
-          this.previousStackHeight.remove(i);
-          this.previousPC.remove(i);
-        }
+        removeInstructions(size);
         
         break;
       }
@@ -210,11 +186,7 @@ public class StackAnalysis {
           this.previousPC.add(Integer.valueOf(pc));
           int size = this.previousIn.size();
           traverse(branch.k, currentHeight);
-          for (int i = this.previousIn.size() - 1; i > size; i--) {
-            this.previousIn.remove(i);
-            this.previousStackHeight.remove(i);
-            this.previousPC.remove(i);
-          }
+          removeInstructions(size);
           
         }
         break;
@@ -227,11 +199,7 @@ public class StackAnalysis {
           this.previousPC.add(Integer.valueOf(pc));
           int size = this.previousIn.size();
           traverse(pc + branch.k, currentHeight);
-          for (int i = this.previousIn.size() - 1; i > size; i--) {
-            this.previousIn.remove(i);
-            this.previousStackHeight.remove(i);
-            this.previousPC.remove(i);
-          }
+          removeInstructions(size);
         }
         //
         break;
@@ -246,11 +214,7 @@ public class StackAnalysis {
         this.previousPC.add(Integer.valueOf(pc));
         int size = this.previousIn.size();
         traverse(pc, currentHeight + 1);
-        for (int i = this.previousIn.size() - 1; i > size; i--) {
-          this.previousIn.remove(i);
-          this.previousStackHeight.remove(i);
-          this.previousPC.remove(i);
-        }
+        removeInstructions(size);
         
         break;
       }
@@ -261,11 +225,7 @@ public class StackAnalysis {
         // Explore the branch target
         int size = this.previousIn.size();
         traverse(pc, currentHeight - 1);
-        for (int i = this.previousIn.size() - 1; i > size; i--) {
-          this.previousIn.remove(i);
-          this.previousStackHeight.remove(i);
-          this.previousPC.remove(i);
-        }
+        removeInstructions(size);
         break;
       }
       default: {
@@ -275,17 +235,22 @@ public class StackAnalysis {
         this.previousPC.add(Integer.valueOf(pc));
         int size = this.previousIn.size();
         traverse(pc, currentHeight);
-        for (int i = this.previousIn.size() - 1; i > size; i--) {
-          this.previousIn.remove(i);
-          this.previousStackHeight.remove(i);
-          this.previousPC.remove(i);
-        }
+        removeInstructions(size);
       }
     }
-    
-    
   }
 
+  /**
+   * @param size
+   */
+  public void removeInstructions(int size) {
+    for (int i = this.previousIn.size() - 1; i > size; i--) {
+      this.previousIn.remove(i);
+      this.previousStackHeight.remove(i);
+      this.previousPC.remove(i);
+    }
+  }
+  
   /**
    * Check if we have already visited this instruction.
    * If the current height is the same, then it is a stable 
