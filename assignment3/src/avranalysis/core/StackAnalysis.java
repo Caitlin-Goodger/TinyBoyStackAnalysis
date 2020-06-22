@@ -45,7 +45,6 @@ public class StackAnalysis {
    */
   private ArrayList<Integer> previousPC = new ArrayList<Integer>();
   
-  private boolean fromCalled = false;
   
 
   /**
@@ -325,7 +324,7 @@ public class StackAnalysis {
         RelativeAddress branch = (RelativeAddress) instruction;
         AvrInstruction instruction2 = decodeInstructionAt(pc + branch.k);
         int next = pc + branch.k + instruction2.getWidth();
-        if (previousHeight != currentHeight && !this.fromCalled && next < pc) {
+        if (previousHeight != currentHeight && next < pc) {
           this.maxHeight = Integer.MAX_VALUE;
         }
       }
