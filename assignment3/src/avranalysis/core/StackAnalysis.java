@@ -120,8 +120,8 @@ public class StackAnalysis {
           traverse(pc + branch.k, currentHeight);
           //Once it had traversed down a branch, then remove the instructions
           //that it had seen down that branch
-          removeInstructions(size);
           traverse(pc, currentHeight);
+          removeInstructions(size);
         }
         
         break;
@@ -241,7 +241,8 @@ public class StackAnalysis {
   }
 
   /**
-   * @param size
+   * Remove the instructions that had been added when moving down a branch.
+   * @param size = the point to stop removing instructions
    */
   public void removeInstructions(int size) {
     for (int i = this.previousIn.size() - 1; i > size; i--) {
